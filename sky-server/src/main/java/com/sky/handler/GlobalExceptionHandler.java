@@ -1,4 +1,4 @@
-package handler;
+package com.sky.handler;
 
 import com.sky.constant.MessageConstant;
 import com.sky.result.Result;
