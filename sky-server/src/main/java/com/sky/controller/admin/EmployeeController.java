@@ -2,7 +2,10 @@ package com.sky.controller.admin;
 
 import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.dto.PasswordEditDTO;
+import com.sky.entity.Employee;
+import com.sky.result.PageResult;
 import com.sky.result.Result;
 import com.sky.service.EmployeeService;
 import com.sky.vo.EmployeeLoginVO;
@@ -45,5 +48,26 @@ public class EmployeeController {
         log.info("修改员工id:{}的密码", BaseContext.getCurrentId());
         employeeService.editPassword(passwordEditDTO);
         return Result.success();
+    }
+
+    /**
+     * 修改员工状态
+     * @param status
+     * @return
+     */
+    @PostMapping("/status/{status}")
+    @Operation(summary = "员工状态")
+    public Result status(@PathVariable Integer status,@RequestParam Long id){
+        log.info("修改员工{}状态：{}",id,status);
+        employeeService.setStatus(id,status);
+        return Result.success();
+    }
+
+    @GetMapping("/page")
+    @Operation(summary = "员工分页查询")
+    public Result<PageResult> page(EmployeePageQueryDTO employeePageQueryDTO){
+        log.info("员工分页查询");
+        PageResult employeeList = employeeService.pageQuery(employeePageQueryDTO);
+        return Result.success(employeeList);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
  * 配置类,注册web层相关组件
@@ -15,7 +16,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 @Configuration//定义配置类
 @Slf4j
 @RequiredArgsConstructor
-public class WebMvcConfig extends WebMvcConfigurationSupport {
+public class WebMvcConfig implements WebMvcConfigurer {
     // 注入拦截器
     private final JwtTokenAdminInterceptor jwtTokenAdminInterceptor;
     private final JwtTokenUserInterceptor jwtTokenUserInterceptor;
@@ -25,7 +26,7 @@ public class WebMvcConfig extends WebMvcConfigurationSupport {
      * @param registry
      */
     @Override
-    protected void addInterceptors(InterceptorRegistry registry){
+    public void addInterceptors(InterceptorRegistry registry){
         log.info("开始注册自定义拦截器喵");
         registry.addInterceptor(jwtTokenAdminInterceptor)
                 .addPathPatterns("/admin/**")

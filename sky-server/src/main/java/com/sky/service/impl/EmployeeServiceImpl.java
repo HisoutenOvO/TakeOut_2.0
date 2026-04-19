@@ -2,11 +2,14 @@ package com.sky.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.databind.ser.Serializers;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.EmployeePageQueryDTO;
 import com.sky.dto.PasswordEditDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.LoginFailedException;
@@ -14,6 +17,7 @@ import com.sky.exception.PasswordEditFailedException;
 import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.properties.JwtProperties;
+import com.sky.result.PageResult;
 import com.sky.service.EmployeeService;
 import com.sky.utils.JwtUtil;
 import com.sky.vo.EmployeeLoginVO;
@@ -22,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -99,5 +104,27 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee employee = Employee.builder().id(empId).password(newPwd).build();
         employeeMapper.updateByEmployeeId(employee);
+    }
+
+    /**
+     * 编辑员工状态
+     * @param status
+     */
+    @Override
+    public void setStatus(Long id,Integer status) {
+        Employee employee = Employee.builder().id(id).status(status).build();
+        employeeMapper.updateByEmployeeId(employee);
+    }
+
+    @Override
+    public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
+        PageHelper.startPage(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
+        Page<Employee> employeeList = employeeMapper.page(employeePageQueryDTO);
+        //获取总记录数
+        Long total = employeeList.getTotal();
+        List<Employee> records = employeeList.getResult();
+        return new PageResult(total,records);
+
+
     }
 }

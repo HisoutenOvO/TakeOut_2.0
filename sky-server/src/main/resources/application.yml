@@ -53,3 +53,7 @@ sky:
     access-key-id: ${sky.alioss.access-key-id}
     access-key-secret: ${sky.alioss.access-key-secret}
     bucket-name: ${sky.alioss.bucket-name}
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn

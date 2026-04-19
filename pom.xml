@@ -26,7 +26,7 @@
         <jaxb-runtime>4.0.5</jaxb-runtime>
         <aspectj>1.9.19</aspectj>
         <poi>5.2.4</poi>
-        <knife4j>4.5.0</knife4j>
+        <knife4j>4.4.0</knife4j>
         <jjwt>0.12.3</jjwt>
         <mysql>9.4.0</mysql>
         <pagehelper>2.1.0</pagehelper>
@@ -36,6 +36,8 @@
         <xmlbeans>5.1.1</xmlbeans>
         <apache-commons>4.4</apache-commons>
         <maven-plugin>3.13.0</maven-plugin>
+        <springdoc.version>2.8.9</springdoc.version>
+        <jsqlparser.version>4.9</jsqlparser.version>
     </properties>
 
     <modules>
@@ -161,7 +163,19 @@
                 <artifactId>commons-collections4</artifactId>
                 <version>${apache-commons}</version>
             </dependency>
+            <dependency>
+                <groupId>org.springdoc</groupId>
+                <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+                <version>${springdoc.version}</version>
+            </dependency>
+            <!-- 强制统一 jsqlparser 版本 -->
+            <dependency>
+                <groupId>com.github.jsqlparser</groupId>
+                <artifactId>jsqlparser</artifactId>
+                <version>${jsqlparser.version}</version>
+            </dependency>
         </dependencies>
+
     </dependencyManagement>
     <build>
         <plugins>
