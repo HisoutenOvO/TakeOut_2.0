@@ -59,8 +59,8 @@ public class AutoFIllAspect {
                 //基于反射获取时间和ID的get和set方法
                 Method setCreateTime = entity.getClass().getMethod(AutoFillConstant.SET_CREATE_TIME,LocalDateTime.class);
                 Method setUpdateTime = entity.getClass().getMethod(AutoFillConstant.SET_UPDATE_TIME,LocalDateTime.class);
-                Method setCreateUser = entity.getClass().getMethod(AutoFillConstant.SET_CREATE_USER,LocalDateTime.class);
-                Method setUpdateUser = entity.getClass().getMethod(AutoFillConstant.SET_UPDATE_USER,LocalDateTime.class);
+                Method setCreateUser = entity.getClass().getMethod(AutoFillConstant.SET_CREATE_USER,Long.class);
+                Method setUpdateUser = entity.getClass().getMethod(AutoFillConstant.SET_UPDATE_USER,Long.class);
                 //为对应的属性赋值
                 setCreateTime.invoke(entity,now);//意为调用entity的setCreateTime方法，并传入now作为参数，而该entity就是
                 setCreateUser.invoke(entity,currentId);
@@ -73,7 +73,7 @@ public class AutoFIllAspect {
             //如果是更新语句，则需要更新两个字段，分别是修改人和日期
             try{
                 Method setUpdateTime = entity.getClass().getMethod(AutoFillConstant.SET_UPDATE_TIME,LocalDateTime.class);
-                Method setUpdateUser = entity.getClass().getMethod(AutoFillConstant.SET_UPDATE_USER,LocalDateTime.class);
+                Method setUpdateUser = entity.getClass().getMethod(AutoFillConstant.SET_UPDATE_USER,Long.class);
                 setUpdateUser.invoke(entity,currentId);
                 setUpdateTime.invoke(entity,now);
             } catch (Exception e) {

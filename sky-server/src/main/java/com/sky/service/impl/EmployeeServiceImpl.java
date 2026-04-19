@@ -1,12 +1,17 @@
 package com.sky.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.fasterxml.jackson.databind.ser.Serializers;
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
+import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeLoginDTO;
+import com.sky.dto.PasswordEditDTO;
 import com.sky.entity.Employee;
 import com.sky.exception.LoginFailedException;
+import com.sky.exception.PasswordEditFailedException;
+import com.sky.exception.PasswordErrorException;
 import com.sky.mapper.EmployeeMapper;
 import com.sky.properties.JwtProperties;
 import com.sky.service.EmployeeService;
@@ -67,5 +72,32 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .name(employee.getName())
                 .token(token)
                 .build();
+    }
+
+    /**
+     * 修改密码
+     * @param passwordEditDTO
+     */
+    @Override
+    public void editPassword(PasswordEditDTO passwordEditDTO) {
+        Long empId = BaseContext.getCurrentId();
+        String newPwd = passwordEditDTO.getNewPassword();
+        String oldPwd = passwordEditDTO.getOldPassword();
+        //进行md5加密
+        oldPwd = DigestUtils.md5DigestAsHex(oldPwd.getBytes());
+        newPwd = DigestUtils.md5DigestAsHex(newPwd.getBytes());
+        //检验老密码是否和数据库中存放的密码一致
+        String psw = employeeMapper.selectById(empId).getPassword();
+        if(!oldPwd.equals(psw)){
+            throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
+        }
+        //再检验新老密码是否一致
+        if(newPwd.equals(oldPwd)){
+            throw new PasswordEditFailedException(MessageConstant.PASSWORD_EDIT_FAILED);
+        }
+        //若全部一致，则修改密码
+
+        Employee employee = Employee.builder().id(empId).password(newPwd).build();
+        employeeMapper.updateByEmployeeId(employee);
     }
 }
