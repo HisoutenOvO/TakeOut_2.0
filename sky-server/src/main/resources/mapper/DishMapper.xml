@@ -37,23 +37,29 @@
         </set>
         where id = #{id}
     </update>
-    <select id="pageQuery" resultType="com.sky.entity.Dish" >
-        select * from dish
+    <select id="pageQuery" resultType="com.sky.vo.DishVO">
+        select d.*,c.name as categoryName from dish d left join category c on d.category_id = c.id
         <where>
             <if test="name != null and name != ''">
-                and name like concat('%',#{name},'%')
+                and d.name like concat('%',#{name},'%')
             </if>
             <if test="categoryId != null">
-                and category_id = #{categoryId}
+                and d.category_id = #{categoryId}
             </if>
             <if test="status != null">
-                and status = #{status}
+                and d.status = #{status}
             </if>
         </where>
-        order by update_time desc
+        order by d.update_time desc
     </select>
     <select id="getListByCategoryId" resultType="com.sky.entity.Dish">
         select * from dish where category_id = #{categoryId}
+    </select>
+    <select id="getCountByCategoryId" resultType="java.lang.Integer">
+        select count(0) from dish where category_id = #{categoryId}
+    </select>
+    <select id="getStatusBySetmealId" resultType="java.lang.Integer">
+        select status from dish where id in (select dish_id from setmeal_dish where setmeal_id = #{setmeal_id})
     </select>
 
 </mapper>

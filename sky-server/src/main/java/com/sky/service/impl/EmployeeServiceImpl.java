@@ -6,6 +6,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.JwtClaimsConstant;
 import com.sky.constant.MessageConstant;
+import com.sky.constant.PasswordConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.EmployeeDTO;
@@ -161,7 +162,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         BeanUtils.copyProperties(employeeDTO,employee);
         //插入未补全的密码和状态信息
         employee.setStatus(StatusConstant.DISABLE);
-        employee.setPassword(DigestUtils.md5DigestAsHex("123456".getBytes()));
+        employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
         employeeMapper.insertEmployee(employee);
     }
 }

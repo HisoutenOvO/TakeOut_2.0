@@ -14,4 +14,29 @@ public interface SetmealDishMapper extends BaseMapper<SetmealDish> {
      * @return
      */
     List<Long> getSetmealIdsByDishIds(List<Long> dishIds);
+
+    /**
+     * 批量插入套餐和菜品的关联数据
+     * @param dishes
+     */
+    void insertBySetmealId(List<SetmealDish> dishes);
+
+    /**
+     * 通过套餐id查询套餐和菜品的关联数据
+     * @param SetmealId
+     * @return
+     */
+    List<SetmealDish> getDishesBySetmealId(Long SetmealId);
+
+    /**
+     * 批量删除套餐和菜品的关联数据
+     * @param setmealIds
+     */
+    void deleteBatchBySetmealId(List<Long> setmealIds);
+
+    /**
+     * 通过套餐id删除套餐和菜品的关联数据
+     * @param id
+     */
+    void deleteBySetmealId(Long id);
 }

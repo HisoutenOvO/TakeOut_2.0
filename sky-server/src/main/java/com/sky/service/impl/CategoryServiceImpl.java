@@ -2,11 +2,15 @@ package com.sky.service.impl;
 
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.sky.constant.MessageConstant;
 import com.sky.constant.StatusConstant;
 import com.sky.dto.CategoryDTO;
 import com.sky.dto.CategoryPageQueryDTO;
 import com.sky.entity.Category;
+import com.sky.exception.DeletionNotAllowedException;
 import com.sky.mapper.CategoryMapper;
+import com.sky.mapper.DishMapper;
+import com.sky.mapper.SetmealMapper;
 import com.sky.result.PageResult;
 import com.sky.service.CategoryService;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +23,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryMapper categoryMapper;
+    private final DishMapper dishMapper;
+    private final SetmealMapper setmealMapper;
 
     /**
-     *
+     * 分页查询
      * @param categoryPageQueryDTO
      * @return
      */
@@ -78,6 +84,14 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public void delete(Long id) {
+        //判断分类能否删除-是否关联了菜品
+        if(dishMapper.getCountByCategoryId(id) > 0){
+            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_DISH);
+        }
+        //判断分类能否删除-是否关联了套餐
+        if(setmealMapper.getCountByCategoryId(id) > 0){
+            throw new DeletionNotAllowedException(MessageConstant.CATEGORY_BE_RELATED_BY_SETMEAL);
+        }
         categoryMapper.deleteById(id);
     }
 

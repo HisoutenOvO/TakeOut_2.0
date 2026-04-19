@@ -19,7 +19,7 @@ public interface DishMapper extends BaseMapper<Dish> {
      * @param dishPageQueryDTO
      * @return
      */
-    Page<Dish> pageQuery(DishPageQueryDTO dishPageQueryDTO);
+    Page<DishVO> pageQuery(DishPageQueryDTO dishPageQueryDTO);
 
     /**
      * 新增菜品
@@ -41,4 +41,16 @@ public interface DishMapper extends BaseMapper<Dish> {
      */
     @AutoFill(OperationType.UPDATE)
     void updateDish(Dish dish);
+
+    /**
+     * 根据分类id查询菜品数量
+     */
+    Integer getCountByCategoryId(Long categoryId);
+
+    /**
+     * 查询指定套餐下的菜品状态
+     * @param setmealId
+     * @return
+     */
+    List<Integer> getStatusBySetmealId(Long setmealId);
 }

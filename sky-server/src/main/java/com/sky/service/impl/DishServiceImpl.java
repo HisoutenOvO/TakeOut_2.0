@@ -25,7 +25,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class DIshServiceImpl implements DishService {
+public class DishServiceImpl implements DishService {
     private final DishMapper dishMapper;
     private final DishFlavorMapper dishFlavorMapper;
     private final SetmealDishMapper setmealDishMapper;
@@ -36,10 +36,10 @@ public class DIshServiceImpl implements DishService {
     @Override
     public PageResult pageQuery(DishPageQueryDTO dishPageQueryDTO) {
         PageHelper.startPage(dishPageQueryDTO.getPage(),dishPageQueryDTO.getPageSize());
-        Page<Dish> page = dishMapper.pageQuery(dishPageQueryDTO);
+        Page<DishVO> page = dishMapper.pageQuery(dishPageQueryDTO);
 
         Long total = page.getTotal();
-        List<Dish> records = page.getResult();
+        List<DishVO> records = page.getResult();
 
         return new PageResult(total,records);
     }
@@ -59,7 +59,7 @@ public class DIshServiceImpl implements DishService {
         //向口味表中添加数据
         List<DishFlavor> flavorList = dishDTO.getFlavors();
         //检查是否填写了口味
-        if(flavorList != null){
+        if(flavorList != null && !flavorList.isEmpty()){
             //为每一条口味数据添加菜品id
             flavorList.forEach(dishFlavor -> dishFlavor.setDishId(dish.getId()));
             dishFlavorMapper.insertDishFlavor(flavorList);
