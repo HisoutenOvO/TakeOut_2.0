@@ -102,6 +102,14 @@ public class CategoryServiceImpl implements CategoryService {
      */
     @Override
     public List<Category> list(Integer type) {
-        return categoryMapper.list(type);
+        //由于有两处controller调用此方法故需做判断
+        //如果type为空，则调用的是list方法，借用分页查询方法，否则调用的是根据type查询
+        if(type != null) {
+            return categoryMapper.list(type);
+        }else{
+            CategoryPageQueryDTO categoryPageQueryDTO = new CategoryPageQueryDTO();
+            Page<Category> categories = categoryMapper.pageQuery(categoryPageQueryDTO);
+            return categories;
+        }
     }
 }
