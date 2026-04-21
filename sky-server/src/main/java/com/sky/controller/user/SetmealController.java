@@ -1,16 +1,14 @@
 package com.sky.controller.user;
 
 import com.sky.entity.Setmeal;
+import com.sky.entity.SetmealDish;
 import com.sky.result.Result;
 import com.sky.service.SetmealService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,4 +33,16 @@ public class SetmealController {
         return Result.success(setmealList);
     }
 
+    /**
+     * 根据套餐id查询包含的菜品
+     * @param id
+     * @return
+     */
+    @GetMapping("/dish/{id}")
+    @Operation(summary = "根据套餐id查询包含的菜品")
+    public Result<List<SetmealDish>> getDishByCategoryId(@PathVariable Long id){
+        log.info("根据套餐id:{}查询包含的菜品",id);
+        List<SetmealDish> setmealDishes = setmealService.getDishByCategoryId(id);
+        return Result.success(setmealDishes);
+    }
 }

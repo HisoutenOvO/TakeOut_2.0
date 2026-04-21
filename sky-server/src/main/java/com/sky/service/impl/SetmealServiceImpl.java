@@ -154,5 +154,15 @@ public class SetmealServiceImpl implements SetmealService {
         return setmealMapper.getListByCategoryId(categoryId);
     }
 
+    /**
+     * 根据套餐id查询菜品
+     * @param id
+     * @return
+     */
+    @Override
+    public List<SetmealDish> getDishByCategoryId(Long id) {
+       return setmealDishMapper.getDishesBySetmealId(id);
+    }
+
 
 }
