@@ -144,5 +144,15 @@ public class SetmealServiceImpl implements SetmealService {
         }
     }
 
+    /**
+     * 根据分类id查询套餐
+     * @param categoryId
+     * @return
+     */
+    @Override
+    public List<Setmeal> getByCategoryId(Long categoryId) {
+        return setmealMapper.getListByCategoryId(categoryId);
+    }
+
 
 }
