@@ -104,7 +104,9 @@ public class DishServiceImpl implements DishService {
      */
     @Override
     public List<Dish> list(Long categoryId) {
-        return dishMapper.getListByCategoryId(categoryId);
+        Dish dish = new Dish();
+        dish.setCategoryId(categoryId);
+        return dishMapper.getListByCategoryId(dish);
     }
 
     /**
@@ -154,6 +156,19 @@ public class DishServiceImpl implements DishService {
     @Override
     public void status(Long id, Integer status) {
         Dish dish = new Dish();
+        //若要停售，则判断菜品关联的套餐是否起售，若起售则不予修改
+        if(status.equals(StatusConstant.DISABLE)){
+            List<Long> SetmealIds = setmealDishMapper.getSetmealIdsByDishId(id);
+            if(SetmealIds != null && !SetmealIds.isEmpty()){
+                for (Long SetmealId : SetmealIds) {
+                    Integer SetmealStatus = setmealDishMapper.getSetmealStatusBySetmealId(SetmealId);
+                    if(SetmealStatus.equals(StatusConstant.ENABLE)){
+                        throw new DeletionNotAllowedException(MessageConstant.DISH_DISABLE_FAILED);
+                    }
+                }
+            }
+        }
+        //否则修改菜品状态
         dish.setStatus(status);
         dish.setId(id);
         dishMapper.updateDish(dish);
@@ -168,13 +183,16 @@ public class DishServiceImpl implements DishService {
     public List<DishVO> getByCategoryId(Long categoryId) {
         List<DishVO> dishVOList = new ArrayList<>();
         //查询菜品数据
-        List<Dish> dishList = dishMapper.getListByCategoryId(categoryId);
+        Dish dish = new Dish();
+        dish.setStatus(StatusConstant.ENABLE);
+        dish.setCategoryId(categoryId);
+        List<Dish> dishList = dishMapper.getListByCategoryId(dish);
         //查询对应的口味数据
-        for (Dish dish : dishList) {
-            Long dishId = dish.getId();
+        for (Dish dishes : dishList) {
+            Long dishId = dishes.getId();
             List<DishFlavor> flavors = dishFlavorMapper.getFlavorsByDishId(dishId);
             DishVO dishVO = new DishVO();
-            BeanUtils.copyProperties(dish,dishVO);
+            BeanUtils.copyProperties(dishes,dishVO);
             dishVO.setFlavors(flavors);
             dishVOList.add(dishVO);
         }

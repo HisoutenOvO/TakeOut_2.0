@@ -43,8 +43,8 @@ public interface SetmealMapper extends BaseMapper<Setmeal> {
 
     /**
      * 根据分类id查询套餐
-     * @param categoryId
+     * @param setmeal
      * @return
      */
-    List<Setmeal> getListByCategoryId(Long categoryId);
+    List<Setmeal> getListByCategoryId(Setmeal setmeal);
 }

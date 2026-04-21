@@ -32,6 +32,6 @@
         </foreach>
     </select>
     <select id="getListByCategoryId" resultType="com.sky.entity.Setmeal">
-        select * from setmeal where category_id = #{categoryId}
+        select * from setmeal where category_id = #{categoryId} and status = #{status}
     </select>
 </mapper>

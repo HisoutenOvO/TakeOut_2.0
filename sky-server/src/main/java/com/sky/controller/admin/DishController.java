@@ -12,9 +12,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RestController("adminDishController")
 @RequestMapping("/admin/dish")
@@ -23,6 +25,7 @@ import java.util.List;
 @Tag(name = "菜品管理接口")
 public class DishController {
     private final DishService dishService;
+    private final RedisTemplate redisTemplate;
 
     /**
      * 菜品分页查询
@@ -46,6 +49,9 @@ public class DishController {
     public Result insertWithFlavor(@RequestBody DishDTO dishDTO){
         log.info("新增菜品");
         dishService.insertWithFlavor(dishDTO);
+        //清理缓存
+        String key = "dish_" + dishDTO.getCategoryId();
+        cleanCache(key);
         return Result.success();
     }
 
@@ -58,6 +64,7 @@ public class DishController {
     public Result delete(@RequestParam List<Long> ids){
         log.info("删除菜品");
         dishService.delete(ids);
+        cleanCache("dish_*");
         return Result.success();
     }
 
@@ -83,6 +90,7 @@ public class DishController {
     public Result update(@RequestBody DishDTO dishDTO){
         log.info("修改菜品");
         dishService.update(dishDTO);
+        cleanCache("dish_*");
         return Result.success();
     }
 
@@ -96,6 +104,7 @@ public class DishController {
     public Result status(@PathVariable Integer status,@RequestParam Long id){
         log.info("修改菜品{}状态：{}",id,status);
         dishService.status(id,status);
+        cleanCache("dish_*");
         return Result.success();
     }
 
@@ -111,4 +120,10 @@ public class DishController {
         return Result.success(dishList);
     }
 
+
+
+    //私有方法，清理缓存
+    private void cleanCache(String pattern){
+        redisTemplate.delete(redisTemplate.keys(pattern));
+    }
 }

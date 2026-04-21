@@ -39,4 +39,18 @@ public interface SetmealDishMapper extends BaseMapper<SetmealDish> {
      * @param id
      */
     void deleteBySetmealId(Long id);
+
+    /**
+     * 通过菜品id查询关联的套餐id
+     * @param id
+     * @return
+     */
+    List<Long> getSetmealIdsByDishId(Long id);
+
+    /**
+     * 通过套餐id查询套餐状态
+     * @param id
+     * @return
+     */
+    Integer getSetmealStatusBySetmealId(Long id);
 }

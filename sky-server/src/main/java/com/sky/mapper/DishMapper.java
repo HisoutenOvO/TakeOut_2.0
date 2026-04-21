@@ -30,10 +30,10 @@ public interface DishMapper extends BaseMapper<Dish> {
 
     /**
      * 根据分类id查询菜品数据
-     * @param categoryId
+     * @param dish
      * @return
      */
-    List<Dish> getListByCategoryId(Long categoryId);
+    List<Dish> getListByCategoryId(Dish dish);
 
     /**
      * 修改菜品数据
