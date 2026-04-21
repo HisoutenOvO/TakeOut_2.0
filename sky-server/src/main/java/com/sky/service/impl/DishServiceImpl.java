@@ -18,9 +18,11 @@ import com.sky.service.DishService;
 import com.sky.vo.DishVO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.support.collections.DefaultRedisList;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -155,5 +157,27 @@ public class DishServiceImpl implements DishService {
         dish.setStatus(status);
         dish.setId(id);
         dishMapper.updateDish(dish);
+    }
+
+    /**
+     * 根据分类id查询菜品数据
+     * @param categoryId
+     * @return
+     */
+    @Override
+    public List<DishVO> getByCategoryId(Long categoryId) {
+        List<DishVO> dishVOList = new ArrayList<>();
+        //查询菜品数据
+        List<Dish> dishList = dishMapper.getListByCategoryId(categoryId);
+        //查询对应的口味数据
+        for (Dish dish : dishList) {
+            Long dishId = dish.getId();
+            List<DishFlavor> flavors = dishFlavorMapper.getFlavorsByDishId(dishId);
+            DishVO dishVO = new DishVO();
+            BeanUtils.copyProperties(dish,dishVO);
+            dishVO.setFlavors(flavors);
+            dishVOList.add(dishVO);
+        }
+        return dishVOList;
     }
 }
