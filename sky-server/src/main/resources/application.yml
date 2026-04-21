@@ -57,3 +57,6 @@ knife4j:
   enable: true
   setting:
     language: zh_cn
+  wechat:
+      appid: ${sky.wechat.appid}
+      secret: ${sky.wechat.secret}
