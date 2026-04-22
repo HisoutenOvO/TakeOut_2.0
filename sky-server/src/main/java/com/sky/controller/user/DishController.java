@@ -1,6 +1,5 @@
 package com.sky.controller.user;
 
-import com.sky.entity.Dish;
 import com.sky.result.Result;
 import com.sky.service.DishService;
 import com.sky.vo.DishVO;
@@ -8,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,18 +31,10 @@ public class DishController {
      */
     @GetMapping("/list")
     @Operation(summary = "查询当前分类下的菜品")
+    @Cacheable(cacheNames = "dish" , key = "#categoryId")
     public Result<List<DishVO>> list(@RequestParam Long categoryId){
         log.info("查询当前分类下的菜品");
-        //构造redis中的key，规则：dish_分类id
-        String key = "dish_" + categoryId;
-        //查询redis中是否有菜品数据，没有则添加，有则查询
-        List<DishVO> dishVOList = (List<DishVO>) redisTemplate.opsForValue().get(key);
-        if(dishVOList != null && dishVOList.size() > 0){
-            return Result.success(dishVOList);
-        }else{
-            dishVOList = dishService.getByCategoryId(categoryId);
-            redisTemplate.opsForValue().set(key,dishVOList);
-        }
+        List<DishVO> dishVOList = dishService.getByCategoryId(categoryId);
         return Result.success(dishVOList);
     }
 }

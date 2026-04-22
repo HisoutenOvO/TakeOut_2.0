@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +27,7 @@ public class SetmealController {
      * @return
      */
     @GetMapping("/list")
+    @Cacheable(cacheNames = "setmealCache",key = "#categoryId")
     @Operation(summary = "根据分类id查询套餐")
     public Result<List<Setmeal>> list(@RequestParam Long categoryId){
         log.info("根据分类id:{}查询套餐",categoryId);

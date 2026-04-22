@@ -12,11 +12,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController("adminDishController")
 @RequestMapping("/admin/dish")
@@ -46,12 +46,12 @@ public class DishController {
      */
     @PostMapping
     @Operation(summary = "新增菜品")
+    @CacheEvict(cacheNames = "dish" , key = "#dishDTO.getCategoryId()")
     public Result insertWithFlavor(@RequestBody DishDTO dishDTO){
         log.info("新增菜品");
         dishService.insertWithFlavor(dishDTO);
         //清理缓存
         String key = "dish_" + dishDTO.getCategoryId();
-        cleanCache(key);
         return Result.success();
     }
 
@@ -61,10 +61,10 @@ public class DishController {
      */
     @DeleteMapping
     @Operation(summary = "删除菜品")
+    @CacheEvict(cacheNames = "dish" , allEntries = true)
     public Result delete(@RequestParam List<Long> ids){
         log.info("删除菜品");
         dishService.delete(ids);
-        cleanCache("dish_*");
         return Result.success();
     }
 
@@ -87,10 +87,10 @@ public class DishController {
      */
     @PutMapping
     @Operation(summary = "修改菜品")
+    @CacheEvict(cacheNames = "dish" , allEntries = true)
     public Result update(@RequestBody DishDTO dishDTO){
         log.info("修改菜品");
         dishService.update(dishDTO);
-        cleanCache("dish_*");
         return Result.success();
     }
 
@@ -101,10 +101,10 @@ public class DishController {
      * @return
      */
     @PostMapping("/status/{status}")
+    @CacheEvict(cacheNames = "dish" , allEntries = true)
     public Result status(@PathVariable Integer status,@RequestParam Long id){
         log.info("修改菜品{}状态：{}",id,status);
         dishService.status(id,status);
-        cleanCache("dish_*");
         return Result.success();
     }
 
@@ -120,10 +120,4 @@ public class DishController {
         return Result.success(dishList);
     }
 
-
-
-    //私有方法，清理缓存
-    private void cleanCache(String pattern){
-        redisTemplate.delete(redisTemplate.keys(pattern));
-    }
 }
