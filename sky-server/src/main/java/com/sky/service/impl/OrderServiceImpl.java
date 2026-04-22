@@ -2,9 +2,12 @@ package com.sky.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.sky.config.WebSocketConfiguration;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
+import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.AddressBook;
@@ -15,9 +18,11 @@ import com.sky.exception.AddressBookBusinessException;
 import com.sky.mapper.AddressBookMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ShoppingCartMapper;
+import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.vo.OrderVO;
 import com.sky.webSocket.WebSocketServer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
@@ -30,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -127,5 +133,35 @@ public class OrderServiceImpl implements OrderService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * 历史订单查询
+     * @param ordersPageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult getHistoryOrders(OrdersPageQueryDTO ordersPageQueryDTO) {
+        //分页查询历史订单
+        PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+        Page<OrderVO> page = orderMapper.pageQuery(ordersPageQueryDTO);
+        //一次性查询所有订单明细（批量查询）
+        List<Long> orderIds = new ArrayList<>();
+        for (OrderVO orderVO : page) {
+            Long id = orderVO.getId();
+            orderIds.add(id);
+        }
+        List<OrderDetail> orderDetailList = orderMapper.getOrderDetailByOrderIds(orderIds);
+        //通过stream将订单明细数据封装到对应的订单中
+        for (OrderVO orderVO : page) {
+            List<OrderDetail> details = orderDetailList.stream()
+                    .filter(detail -> detail.getOrderId().equals(orderVO.getId()))
+                    .collect(Collectors.toList());
+            orderVO.setOrderDetailList(details);
+        }
+        //封装返回
+        Long total = page.getTotal();
+        List<OrderVO> records = page.getResult();
+        return new PageResult(total,records);
     }
 }

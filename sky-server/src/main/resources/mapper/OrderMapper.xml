@@ -11,4 +11,13 @@
     <select id="getByOrderNum" resultType="com.sky.entity.Orders">
         select * from orders where number = #{orderNumber}
     </select>
+    <select id="pageQuery" resultType="com.sky.vo.OrderVO">
+        select * from orders where user_id = #{userId} order by order_time desc
+    </select>
+    <select id="getOrderDetailByOrderIds" resultType="com.sky.entity.OrderDetail">
+        select * from orders where order_id in
+        <foreach collection="orderIds" item="orderId" open="(" close=")" separator=",">
+            #{orderId}
+        </foreach>
+    </select>
 </mapper>
