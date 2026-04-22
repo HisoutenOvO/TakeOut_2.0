@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -60,6 +61,15 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
             }
             shoppingCartMapper.insertDishOrSetmeal(shoppingCart);
         }
+    }
+
+    /**
+     * 获取购物车
+     * @return
+     */
+    @Override
+    public List<ShoppingCart> list() {
+        return shoppingCartMapper.selectList(null);
     }
 
     /**
