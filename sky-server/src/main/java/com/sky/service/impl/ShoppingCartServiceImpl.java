@@ -43,8 +43,8 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
         //查重
         ShoppingCart sc = shoppingCartMapper.findRepetition(shoppingCart);
         if(sc != null){
-            shoppingCart.setNumber(shoppingCart.getNumber() + 1);
-            shoppingCartMapper.updateById(shoppingCart);
+            sc.setNumber(sc.getNumber() + 1);
+            shoppingCartMapper.updateById(sc);
         }else {
             //无重复则新增数据
             //补全剩余信息
@@ -70,6 +70,32 @@ public class ShoppingCartServiceImpl implements ShoppingCartService {
     @Override
     public List<ShoppingCart> list() {
         return shoppingCartMapper.selectList(null);
+    }
+
+    /**
+     * 删除购物车
+     * @param shoppingCartDTO
+     */
+    @Override
+    public void sub(ShoppingCartDTO shoppingCartDTO) {
+        ShoppingCart sc = new ShoppingCart();
+        BeanUtils.copyProperties(shoppingCartDTO,sc);
+        sc.setUserId(BaseContext.getCurrentId());
+        ShoppingCart shoppingCart = shoppingCartMapper.findRepetition(sc);
+        if(shoppingCart.getNumber() == 1){
+            shoppingCartMapper.deleteById(shoppingCart);
+        }else{
+            shoppingCart.setNumber(shoppingCart.getNumber() - 1);
+        }
+        shoppingCartMapper.updateById(shoppingCart);
+    }
+
+    /**
+     * 清空购物车
+     */
+    @Override
+    public void clean() {
+        shoppingCartMapper.delete(null);
     }
 
     /**
