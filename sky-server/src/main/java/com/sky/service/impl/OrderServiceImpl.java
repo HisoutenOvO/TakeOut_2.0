@@ -1,7 +1,11 @@
 package com.sky.service.impl;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sky.config.WebSocketConfiguration;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
+import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
 import com.sky.entity.AddressBook;
 import com.sky.entity.OrderDetail;
@@ -12,15 +16,20 @@ import com.sky.mapper.AddressBookMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ShoppingCartMapper;
 import com.sky.service.OrderService;
+import com.sky.vo.OrderPaymentVO;
 import com.sky.vo.OrderSubmitVO;
+import com.sky.webSocket.WebSocketServer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.socket.sockjs.transport.session.WebSocketServerSockJsSession;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +37,8 @@ public class OrderServiceImpl implements OrderService {
     public final OrderMapper orderMapper;
     private final AddressBookMapper addressBookMapper;
     private final ShoppingCartMapper shoppingCartMapper;
+    private final WebSocketServer webSocketServer;
+    private final ObjectMapper objectMapper;
 
     /**
      * 订单支付
@@ -76,5 +87,45 @@ public class OrderServiceImpl implements OrderService {
                 .orderTime(orders.getOrderTime())
                 .build();
         return orderSubmitVO;
+    }
+
+
+    /**
+     * 模拟订单支付
+     *
+     * @param ordersPaymentDTO
+     * @return
+     */
+    public OrderPaymentVO payment(OrdersPaymentDTO ordersPaymentDTO){
+        //模拟支付成功，跳过微信支付相关业务，直接回调paySuccess
+        paySuccess(ordersPaymentDTO.getOrderNumber());
+        return new OrderPaymentVO();
+    }
+
+    /**
+     * 支付成功
+     * @param outTradeNo
+     */
+    @Override
+    public void paySuccess(String outTradeNo) {
+        // 根据订单号查询订单
+        Orders orders = orderMapper.getByOrderNum(outTradeNo);
+        // 根据订单id更新订单的状态、支付方式、支付状态、结账时间
+        orders.setStatus(Orders.TO_BE_CONFIRMED);
+        orders.setPayMethod(1);
+        orders.setPayStatus(Orders.PAID);
+        orders.setCheckoutTime(LocalDateTime.now());
+        orderMapper.updateById(orders);
+        //通过WebSocket向客户端推送消息
+        Map map = new HashMap<>();
+        map.put("type", 1);//1表示来单提醒
+        map.put("orderId", orders.getId());
+        map.put("content", "订单号：" + outTradeNo);
+        //将map转为JSON并通过WebSocket发送给客户端
+        try {
+            webSocketServer.sendToAllClient(objectMapper.writeValueAsString(map));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

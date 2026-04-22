@@ -14,4 +14,11 @@ public interface OrderMapper extends BaseMapper<Orders> {
      * @param orderDetailList
      */
     void insertOrderDetails(List<OrderDetail> orderDetailList);
+
+    /**
+     * 根据订单号查询订单
+     * @param orderNumber
+     * @return
+     */
+    Orders getByOrderNum(String orderNumber);
 }
