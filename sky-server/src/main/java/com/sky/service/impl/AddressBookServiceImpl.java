@@ -36,5 +36,56 @@ public class AddressBookServiceImpl implements AddressBookService {
         return addressBookMapper.selectList(null);
     }
 
+    /**
+     * 获取默认地址
+     * @return
+     */
+    @Override
+    public AddressBook getDefault() {
+        return addressBookMapper.getDefault();
+    }
+
+    /**
+     * 获取指定id地址
+     * @param id
+     * @return
+     */
+    @Override
+    public AddressBook getById(Long id) {
+        return addressBookMapper.selectById(id);
+    }
+
+    /**
+     * 修改地址
+     * @param addressBook
+     */
+    @Override
+    public void update(AddressBook addressBook) {
+        addressBookMapper.updateById(addressBook);
+    }
+
+    /**
+     * 设置默认地址
+     * @param id
+     */
+    @Override
+    public void updateDefault(Long id) {
+        //把所有地址默认值改成0
+        addressBookMapper.changeAllDefault();
+        //把目标地址改成1
+        AddressBook addressBook = addressBookMapper.selectById(id);
+        addressBook.setIsDefault(1);
+        addressBookMapper.updateById(addressBook);
+    }
+
+    /**
+     * 删除地址
+     * @param id
+     */
+    @Override
+    public void delete(Long id) {
+        addressBookMapper.deleteById(id);
+    }
+
 
 }
