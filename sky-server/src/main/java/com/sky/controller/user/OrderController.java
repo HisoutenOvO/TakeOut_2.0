@@ -56,7 +56,7 @@ public class OrderController {
      */
     @GetMapping("/historyOrders")
     @Operation(summary = "查询历史订单")
-    public Result<PageResult> getHistoryOrders(@RequestParam OrdersPageQueryDTO ordersPageQueryDTO){
+    public Result<PageResult> getHistoryOrders( OrdersPageQueryDTO ordersPageQueryDTO){
         log.info("查询历史订单：{}", ordersPageQueryDTO);
         PageResult pageResult = orderService.getHistoryOrders(ordersPageQueryDTO);
         return Result.success(pageResult);

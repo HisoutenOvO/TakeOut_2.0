@@ -15,7 +15,7 @@
         select * from orders where user_id = #{userId} order by order_time desc
     </select>
     <select id="getOrderDetailByOrderIds" resultType="com.sky.entity.OrderDetail">
-        select * from orders where order_id in
+        select * from order_detail where order_id in
         <foreach collection="orderIds" item="orderId" open="(" close=")" separator=",">
             #{orderId}
         </foreach>

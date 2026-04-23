@@ -142,6 +142,7 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public PageResult getHistoryOrders(OrdersPageQueryDTO ordersPageQueryDTO) {
+        ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
         //分页查询历史订单
         PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
         Page<OrderVO> page = orderMapper.pageQuery(ordersPageQueryDTO);
@@ -155,6 +156,7 @@ public class OrderServiceImpl implements OrderService {
         //通过stream将订单明细数据封装到对应的订单中
         for (OrderVO orderVO : page) {
             List<OrderDetail> details = orderDetailList.stream()
+                    //通过过滤器筛选出当前订单的订单明细
                     .filter(detail -> detail.getOrderId().equals(orderVO.getId()))
                     .collect(Collectors.toList());
             orderVO.setOrderDetailList(details);
