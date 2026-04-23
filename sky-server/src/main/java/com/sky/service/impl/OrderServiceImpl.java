@@ -140,9 +140,10 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public PageResult getHistoryOrders(OrdersPageQueryDTO ordersPageQueryDTO) {
-        ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
+        ordersPageQueryDTO.setUserId(ordersPageQueryDTO.getUserId());
         //分页查询历史订单
         PageHelper.startPage(ordersPageQueryDTO.getPage(), ordersPageQueryDTO.getPageSize());
+
         Page<OrderVO> page = orderMapper.pageQuery(ordersPageQueryDTO);
         //一次性查询所有订单明细（批量查询）
         List<Long> orderIds = new ArrayList<>();
@@ -213,4 +214,15 @@ public class OrderServiceImpl implements OrderService {
         }
         shoppingCartMapper.insertBatch(shoppingCartList);
     }
+
+    /**
+     * 订单催单
+     * @param id
+     */
+    @Override
+    public void remind(Long id) {}
+
+
+
+
 }

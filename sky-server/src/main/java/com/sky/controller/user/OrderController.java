@@ -1,5 +1,6 @@
 package com.sky.controller.user;
 
+import com.sky.context.BaseContext;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
@@ -59,6 +60,7 @@ public class OrderController {
     @Operation(summary = "查询历史订单")
     public Result<PageResult> getHistoryOrders( OrdersPageQueryDTO ordersPageQueryDTO){
         log.info("查询历史订单：{}", ordersPageQueryDTO);
+        ordersPageQueryDTO.setUserId(BaseContext.getCurrentId());
         PageResult pageResult = orderService.getHistoryOrders(ordersPageQueryDTO);
         return Result.success(pageResult);
     }
@@ -96,6 +98,19 @@ public class OrderController {
     public Result repetition(@PathVariable Long id){
         log.info("再来一单");
         orderService.again(id);
+        return Result.success();
+    }
+
+    /**
+     * 订单提醒
+     * @param id
+     * @return
+     */
+    @GetMapping("/reminder/{id}")
+    @Operation(summary = "订单提醒")
+    public Result reminder(@PathVariable Long id){
+        log.info("订单提醒");
+        orderService.remind(id);
         return Result.success();
     }
 }
