@@ -185,4 +185,17 @@ public class OrderServiceImpl implements OrderService {
         orderVO.setOrderDetailList(orderDetailList);
         return orderVO;
     }
+
+    /**
+     * 订单取消
+     * @param id
+     */
+    @Override
+    public void cancelById(Long id) {
+        Orders orders = orderMapper.selectById(id);
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelTime(LocalDateTime.now());
+        orders.setCancelReason(MessageConstant.ORDER_CANCELLED_bY_USER);
+        orderMapper.updateById(orders);
+    }
 }

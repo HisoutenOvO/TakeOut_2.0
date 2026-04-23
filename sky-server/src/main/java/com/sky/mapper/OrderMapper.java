@@ -8,6 +8,7 @@ import com.sky.entity.Orders;
 import com.sky.vo.OrderVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -39,4 +40,5 @@ public interface OrderMapper extends BaseMapper<Orders> {
      * @return
      */
     Page<OrderVO> pageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
+
 }
