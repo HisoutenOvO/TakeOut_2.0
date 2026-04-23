@@ -6,6 +6,7 @@ import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
+import com.sky.dto.OrdersDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.dto.OrdersPaymentDTO;
 import com.sky.dto.OrdersSubmitDTO;
@@ -20,6 +21,7 @@ import com.sky.mapper.ShoppingCartMapper;
 import com.sky.result.PageResult;
 import com.sky.service.OrderService;
 import com.sky.vo.OrderPaymentVO;
+import com.sky.vo.OrderStatisticsVO;
 import com.sky.vo.OrderSubmitVO;
 import com.sky.vo.OrderVO;
 import com.sky.webSocket.WebSocketServer;
@@ -151,7 +153,10 @@ public class OrderServiceImpl implements OrderService {
             Long id = orderVO.getId();
             orderIds.add(id);
         }
-        List<OrderDetail> orderDetailList = orderMapper.getOrderDetailByOrderIds(orderIds);
+        List<OrderDetail> orderDetailList = new ArrayList<>();
+        if(!orderIds.isEmpty()) {
+            orderDetailList = orderMapper.getOrderDetailByOrderIds(orderIds);
+        }
         //通过stream将订单明细数据封装到对应的订单中
         for (OrderVO orderVO : page) {
             List<OrderDetail> details = orderDetailList.stream()
@@ -159,6 +164,9 @@ public class OrderServiceImpl implements OrderService {
                     .filter(detail -> detail.getOrderId().equals(orderVO.getId()))
                     .collect(Collectors.toList());
             orderVO.setOrderDetailList(details);
+            //用stream将菜品名称用逗号拼接并赋给orderVO
+            String dishName = details.stream().map(OrderDetail::getName).collect(Collectors.joining(","));
+            orderVO.setOrderDishes(dishName);
         }
         //封装返回
         Long total = page.getTotal();
@@ -222,7 +230,44 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void remind(Long id) {}
 
+    /**
+     * 确认订单
+     * @param ordersDTO
+     */
+    @Override
+    public void confirm(OrdersDTO ordersDTO) {
+        Long orderId = ordersDTO.getId();
+        Orders orders = orderMapper.selectById(orderId);
+        orders.setStatus(Orders.CONFIRMED);
+        orderMapper.updateById(orders);
+    }
 
+    /**
+     * 订单统计
+     * @return OrderStatisticsVO
+     */
+    @Override
+    public OrderStatisticsVO statistics() {
+        Integer confirmedCount = orderMapper.getCountByStatus(Orders.CONFIRMED);
+        Integer deliveryInProgressCount = orderMapper.getCountByStatus(Orders.DELIVERY_IN_PROGRESS);
+        Integer toBeConfirmed = orderMapper.getCountByStatus(Orders.TO_BE_CONFIRMED);
+        OrderStatisticsVO orderStatisticsVO = new OrderStatisticsVO();
+        orderStatisticsVO.setConfirmed(confirmedCount);
+        orderStatisticsVO.setDeliveryInProgress(deliveryInProgressCount);
+        orderStatisticsVO.setToBeConfirmed(toBeConfirmed);
+        return orderStatisticsVO;
+    }
+
+    /**
+     * 订单派送
+     * @param id
+     */
+    @Override
+    public void delivery(Long id) {
+        Orders orders = orderMapper.selectById(id);
+        orders.setStatus(Orders.DELIVERY_IN_PROGRESS);
+        orderMapper.updateById(orders);
+    }
 
 
 }

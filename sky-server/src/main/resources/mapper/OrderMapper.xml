@@ -41,4 +41,10 @@
             #{orderId}
         </foreach>
     </select>
+<!--    <select id="getDishNameByOrderIds" resultType="java.lang.String">-->
+<!--        select name from order_detail where order_id in-->
+<!--        <foreach collection="orderIds" separator="," open="(" close=")" item="orderId">-->
+<!--            #{orderId}-->
+<!--        </foreach>-->
+<!--    </select>-->
 </mapper>

@@ -9,6 +9,7 @@ import com.sky.vo.OrderVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
+import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
@@ -41,4 +42,17 @@ public interface OrderMapper extends BaseMapper<Orders> {
      */
     Page<OrderVO> pageQuery(OrdersPageQueryDTO ordersPageQueryDTO);
 
+    /**
+     * 查询各状态订单总数
+     * @return
+     */
+    @Select("select count(0) from orders where status = #{status}")
+    Integer getCountByStatus(Integer status);
+
+//    /**
+//     * 根据订单id查询菜品名称
+//     * @param orderIds
+//     * @return
+//     */
+//    List<String> getDishNameByOrderIds(List<Long> orderIds);
 }
