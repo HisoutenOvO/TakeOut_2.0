@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.sky.config.WebSocketConfiguration;
 import com.sky.constant.MessageConstant;
 import com.sky.context.BaseContext;
 import com.sky.dto.OrdersPageQueryDTO;
@@ -28,7 +27,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.socket.sockjs.transport.session.WebSocketServerSockJsSession;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -197,5 +195,22 @@ public class OrderServiceImpl implements OrderService {
         orders.setCancelTime(LocalDateTime.now());
         orders.setCancelReason(MessageConstant.ORDER_CANCELLED_bY_USER);
         orderMapper.updateById(orders);
+    }
+
+    /**
+     * 再来一单
+     * @param id
+     */
+    @Override
+    public void again(Long id) {
+        List<OrderDetail> orderDetailList = orderMapper.getOrderDetailByOrderIds(List.of(id));
+        List<ShoppingCart> shoppingCartList =new ArrayList<>();
+        for (OrderDetail orderDetail : orderDetailList) {
+            ShoppingCart shoppingCart = new ShoppingCart();
+            BeanUtils.copyProperties(orderDetail,shoppingCart);
+            shoppingCart.setUserId(BaseContext.getCurrentId());
+            shoppingCartList.add(shoppingCart);
+        }
+        shoppingCartMapper.insertBatch(shoppingCartList);
     }
 }
