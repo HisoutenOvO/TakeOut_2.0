@@ -76,7 +76,7 @@ public class OrderServiceImpl implements OrderService {
         orders.setPhone(addressBook.getPhone());
         orders.setConsignee(addressBook.getConsignee());
         orders.setAddress(addressName);
-        orders.setDeliveryTime(LocalDateTime.now().plusHours(1));
+        orders.setEstimatedDeliveryTime(LocalDateTime.now().plusHours(1));
         orderMapper.insert(orders);
         List<OrderDetail> orderDetailList = new ArrayList<>();
         //向数据表插入n条订单明细记录
@@ -232,7 +232,20 @@ public class OrderServiceImpl implements OrderService {
      * @param id
      */
     @Override
-    public void remind(Long id) {}
+    public void remind(Long id) {
+        Orders orders = orderMapper.selectById(id);
+        //通过WebSocket向客户端推送消息
+        Map map = new HashMap<>();
+        map.put("type", 2);//1表示来单提醒
+        map.put("orderId", id);
+        map.put("content", "订单号：" + orders.getNumber());
+        //将map转为JSON并通过WebSocket发送给客户端
+        try {
+            webSocketServer.sendToAllClient(objectMapper.writeValueAsString(map));
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * 确认订单
@@ -281,7 +294,7 @@ public class OrderServiceImpl implements OrderService {
     public void complete(Long id) {
         Orders orders = orderMapper.selectById(id);
         orders.setStatus(Orders.COMPLETED);
-        orders.setOrderTime(LocalDateTime.now());
+        orders.setDeliveryTime(LocalDateTime.now());
         orderMapper.updateById(orders);
     }
 

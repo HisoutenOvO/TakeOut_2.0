@@ -8,6 +8,11 @@
             (#{od.name}, #{od.orderId}, #{od.dishId}, #{od.setmealId}, #{od.dishFlavor}, #{od.number}, #{od.amount}, #{od.image})
         </foreach>
     </insert>
+    <update id="updateBatch">
+        <foreach collection="ordersList" item="o" separator="," open="(" close=")">
+        update orders set status = #{o.status} and cancel_time = #{o.cancelTime} and cancel_reason = #{o.cancelReason} where id = #{o.id}
+        </foreach>
+    </update>
     <select id="getByOrderNum" resultType="com.sky.entity.Orders">
         select * from orders where number = #{orderNumber}
     </select>
@@ -41,10 +46,4 @@
             #{orderId}
         </foreach>
     </select>
-<!--    <select id="getDishNameByOrderIds" resultType="java.lang.String">-->
-<!--        select name from order_detail where order_id in-->
-<!--        <foreach collection="orderIds" separator="," open="(" close=")" item="orderId">-->
-<!--            #{orderId}-->
-<!--        </foreach>-->
-<!--    </select>-->
 </mapper>

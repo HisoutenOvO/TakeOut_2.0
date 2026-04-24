@@ -25,6 +25,6 @@ public class MessageConstant {
     public static final String DISH_BE_RELATED_BY_SETMEAL = "当前菜品关联了套餐,不能删除";
     public static final String ORDER_STATUS_ERROR = "订单状态错误，不可被取消";
     public static final String ORDER_CANCELLED_BY_USER = "订单已被买家取消";
-    public static final String ORDER_NOT_FOUND = "订单不存在";
+    public static final String ORDER_OVER_TIME = "订单超时未付款，已自动取消";
 
 }
