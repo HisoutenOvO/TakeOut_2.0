@@ -9,6 +9,7 @@ import com.sky.entity.Dish;
 import com.sky.enumeration.OperationType;
 import com.sky.vo.DishVO;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -53,4 +54,12 @@ public interface DishMapper extends BaseMapper<Dish> {
      * @return
      */
     List<Integer> getStatusBySetmealId(Long setmealId);
+
+    /**
+     * 查询指定状态的菜品数量
+     * @param status
+     * @return
+     */
+    @Select("select count(0) from dish where status = #{status}")
+    Integer getCountByStatus(Integer status);
 }
