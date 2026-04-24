@@ -35,7 +35,7 @@ public class WorkspaceServiceImpl implements WorkspaceService {
         //查询今日有效订单数，即已完成的订单
         Integer validOrderCount = workspaceMapper.getCompleteOrderCount(todayBegin,todayEnd);
         //查询营业额，即当天有效订单的总金额
-        Double turnover = workspaceMapper.getMoney(todayBegin,todayEnd);
+        Double turnover = workspaceMapper.getMoney(todayBegin,todayEnd).get(0);
         if(turnover == null){
             turnover = 0.0;
         }

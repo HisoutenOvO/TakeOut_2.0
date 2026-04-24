@@ -12,6 +12,7 @@ import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface OrderMapper extends BaseMapper<Orders> {
@@ -63,4 +64,11 @@ public interface OrderMapper extends BaseMapper<Orders> {
      * @param ordersList
      */
     void updateBatch(List<Orders> ordersList);
+
+    /**
+     * 根据动态条件查询数据
+     * @param map
+     * @return
+     */
+    Double sumByMap(Map map);
 }

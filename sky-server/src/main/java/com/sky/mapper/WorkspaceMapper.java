@@ -6,6 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Mapper
 public interface WorkspaceMapper {
@@ -32,7 +33,7 @@ public interface WorkspaceMapper {
      * @return
      */
     @Select("select sum(amount) from orders where status = 5 and order_time between #{todayBegin} and #{todayEnd}")
-    Double getMoney(LocalDateTime todayBegin, LocalDateTime todayEnd);
+    List<Double> getMoney(LocalDateTime todayBegin, LocalDateTime todayEnd);
 
     /**
      * 查询当天订单数
@@ -42,4 +43,6 @@ public interface WorkspaceMapper {
      */
     @Select("select count(0) from orders where order_time between #{todayBegin} and #{todayEnd}")
     Integer getTodayOrderCount(LocalDateTime todayBegin, LocalDateTime todayEnd);
+
+
 }

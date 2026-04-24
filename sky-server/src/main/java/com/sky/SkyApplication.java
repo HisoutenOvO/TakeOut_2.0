@@ -15,6 +15,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 public class SkyApplication {
     public static void main(String[] args) {
         SpringApplication.run(SkyApplication.class,args);
-        log.info("苍穹外卖项目已启动");
+        log.info("苍穹外卖项目已启动喵~ ^(>w<)^");
     }
 }
