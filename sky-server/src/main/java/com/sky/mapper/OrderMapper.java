@@ -6,6 +6,7 @@ import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.OrderDetail;
 import com.sky.entity.Orders;
 import com.sky.vo.OrderVO;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -47,7 +48,7 @@ public interface OrderMapper extends BaseMapper<Orders> {
      * 查询各状态订单总数
      * @return
      */
-    @Select("select count(0) from orders where status = #{status}")
+    @Select("select count(id) from orders where status = #{status}")
     Integer getCountByStatus(Integer status);
 
     /**
@@ -71,4 +72,11 @@ public interface OrderMapper extends BaseMapper<Orders> {
      * @return
      */
     Double sumByMap(Map map);
+
+    /**
+     * 根据动态条件查询订单数量
+     * @param map
+     * @return
+     */
+    Integer getCountByStatusAndDate(Map map);
 }
