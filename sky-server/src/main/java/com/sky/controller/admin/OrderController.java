@@ -72,12 +72,49 @@ public class OrderController {
         return Result.success(orderStatisticsVO);
     }
 
-
+    /**
+     * 订单派送
+     * @param id
+     * @return
+     */
     @PutMapping("/delivery/{id}")
     @Operation(summary = "订单配送")
     public Result delivery(@PathVariable Long id){
         log.info("订单配送：{}", id);
         orderService.delivery(id);
+        return Result.success();
+    }
+
+    /**
+     * 订单完成
+     * @return
+     */
+    @PutMapping("/complete/{id}")
+    @Operation(summary = "订单完成")
+    public Result complete(@PathVariable Long id){
+        log.info("订单完成：{}", id);
+        orderService.complete(id);
+        return Result.success();
+    }
+
+    /**
+     * 拒单
+     * @param ordersDTO
+     * @return
+     */
+    @PutMapping("/rejection")
+    @Operation(summary = "订单拒绝")
+    public Result rejection(@RequestBody OrdersDTO ordersDTO){
+        log.info("订单拒绝：{}", ordersDTO);
+        orderService.rejection(ordersDTO);
+        return Result.success();
+    }
+
+    @PutMapping("/cancel")
+    @Operation(summary = "取消订单")
+    public Result cancel(@RequestBody OrdersDTO ordersDTO){
+        log.info("取消订单：{}", ordersDTO);
+        orderService.cancel(ordersDTO);
         return Result.success();
     }
 }

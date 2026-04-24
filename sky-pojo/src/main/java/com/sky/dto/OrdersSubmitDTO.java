@@ -13,7 +13,7 @@ public class OrdersSubmitDTO implements Serializable {
     private Long addressBookId;
     //付款方式
     private int payMethod;
-    //备注
+    //备注n
     private String remark;
     //预计送达时间
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")

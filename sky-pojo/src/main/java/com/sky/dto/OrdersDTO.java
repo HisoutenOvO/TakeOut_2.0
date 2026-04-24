@@ -54,4 +54,8 @@ public class OrdersDTO implements Serializable {
 
     private List<OrderDetail> orderDetails;
 
+    private String rejectionReason;
+
+    private String cancelReason;
+
 }

@@ -15,6 +15,7 @@ import com.sky.entity.OrderDetail;
 import com.sky.entity.Orders;
 import com.sky.entity.ShoppingCart;
 import com.sky.exception.AddressBookBusinessException;
+import com.sky.exception.OrderBusinessException;
 import com.sky.mapper.AddressBookMapper;
 import com.sky.mapper.OrderMapper;
 import com.sky.mapper.ShoppingCartMapper;
@@ -63,6 +64,7 @@ public class OrderServiceImpl implements OrderService {
         if(shoppingCartList == null || shoppingCartList.isEmpty()){
             throw new AddressBookBusinessException(MessageConstant.SHOPPING_CART_IS_NULL);
         }
+        String addressName = addressBook.getProvinceName() + addressBook.getCityName() + addressBook.getDistrictName() + addressBook.getDetail();
         //向数据表插入一条订单数据，要求主键回显
         //装填orders对象
         Orders orders = new Orders();
@@ -73,6 +75,8 @@ public class OrderServiceImpl implements OrderService {
         orders.setNumber(String.valueOf(System.currentTimeMillis() + orders.getUserId()));
         orders.setPhone(addressBook.getPhone());
         orders.setConsignee(addressBook.getConsignee());
+        orders.setAddress(addressName);
+        orders.setDeliveryTime(LocalDateTime.now().plusHours(1));
         orderMapper.insert(orders);
         List<OrderDetail> orderDetailList = new ArrayList<>();
         //向数据表插入n条订单明细记录
@@ -202,7 +206,7 @@ public class OrderServiceImpl implements OrderService {
         Orders orders = orderMapper.selectById(id);
         orders.setStatus(Orders.CANCELLED);
         orders.setCancelTime(LocalDateTime.now());
-        orders.setCancelReason(MessageConstant.ORDER_CANCELLED_bY_USER);
+        orders.setCancelReason(MessageConstant.ORDER_CANCELLED_BY_USER);
         orderMapper.updateById(orders);
     }
 
@@ -266,6 +270,48 @@ public class OrderServiceImpl implements OrderService {
     public void delivery(Long id) {
         Orders orders = orderMapper.selectById(id);
         orders.setStatus(Orders.DELIVERY_IN_PROGRESS);
+        orderMapper.updateById(orders);
+    }
+
+    /**
+     * 订单完成
+     * @param id
+     */
+    @Override
+    public void complete(Long id) {
+        Orders orders = orderMapper.selectById(id);
+        orders.setStatus(Orders.COMPLETED);
+        orders.setOrderTime(LocalDateTime.now());
+        orderMapper.updateById(orders);
+    }
+
+    /**
+     * 订单拒接
+     * @param ordersDTO
+     */
+    @Override
+    public void rejection(OrdersDTO ordersDTO) {
+        Orders orders = orderMapper.selectById(ordersDTO.getId());
+        orders.setStatus(Orders.CANCELLED);
+        orders.setRejectionReason(ordersDTO.getRejectionReason());
+        orderMapper.updateById(orders);
+    }
+
+    /**
+     * 取消订单
+     * @param ordersDTO
+     */
+    @Override
+    public void cancel(OrdersDTO ordersDTO) {
+        Orders orders = orderMapper.selectById(ordersDTO.getId());
+        Integer status = orders.getStatus();
+        //判断是否符合可取消的条件
+        if(status != Orders.TO_BE_CONFIRMED && status != Orders.CONFIRMED && status != Orders.DELIVERY_IN_PROGRESS ){
+            throw new OrderBusinessException(MessageConstant.ORDER_STATUS_ERROR);
+        }
+        orders.setStatus(Orders.CANCELLED);
+        orders.setCancelReason(ordersDTO.getCancelReason());
+        orders.setCancelTime(LocalDateTime.now());
         orderMapper.updateById(orders);
     }
 
