@@ -2,11 +2,13 @@ package com.sky.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.github.pagehelper.Page;
+import com.sky.dto.GoodsSalesDTO;
 import com.sky.dto.OrdersPageQueryDTO;
 import com.sky.entity.OrderDetail;
 import com.sky.entity.Orders;
 import com.sky.vo.OrderVO;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import org.apache.ibatis.annotations.MapKey;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
@@ -79,4 +81,11 @@ public interface OrderMapper extends BaseMapper<Orders> {
      * @return
      */
     Integer getCountByStatusAndDate(Map map);
+
+    /**
+     * 查询销量排名
+     * @param map
+     * @return
+     */
+    List<GoodsSalesDTO> getSalesTop10(Map map);
 }

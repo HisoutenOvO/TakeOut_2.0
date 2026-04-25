@@ -1,13 +1,14 @@
 package com.sky.service.impl;
 
+import com.sky.dto.GoodsSalesDTO;
+import com.sky.entity.Dish;
 import com.sky.entity.Orders;
-import com.sky.entity.User;
+import com.sky.mapper.DishMapper;
 import com.sky.mapper.OrderMapper;
-import com.sky.mapper.ReportMapper;
 import com.sky.mapper.UserMapper;
-import com.sky.mapper.WorkspaceMapper;
 import com.sky.service.ReportService;
 import com.sky.vo.OrderReportVO;
+import com.sky.vo.SalesTop10ReportVO;
 import com.sky.vo.TurnoverReportVO;
 import com.sky.vo.UserReportVO;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ import java.util.Map;
 public class ReportServiceImpl implements ReportService {
    private final UserMapper userMapper;
     private final OrderMapper orderMapper;
+    private final DishMapper dishMapper;
 
     /**
      * 营业额统计
@@ -147,6 +149,35 @@ public class ReportServiceImpl implements ReportService {
                 .totalOrderCount(totalOrderCount)
                 .validOrderCount(validOrderCount)
                 .orderCompletionRate(orderCompletionRate)
+                .build();
+    }
+
+    /**
+     * 销售top10
+     * @param begin
+     * @param end
+     * @return
+     */
+    @Override
+    public SalesTop10ReportVO salesTop10Report(LocalDate begin, LocalDate end) {
+        List<GoodsSalesDTO> orderDetails = new ArrayList<>();
+        List<String> nameList = new ArrayList<>();
+        List<Integer> numberList = new ArrayList<>();
+        LocalDateTime beginTime = LocalDateTime.of(begin, LocalTime.MIN);
+        LocalDateTime endTime = LocalDateTime.of(end, LocalTime.MAX);
+        Map map =new HashMap<>();
+        map.put("begin",beginTime);
+        map.put("end",endTime);
+
+        orderDetails = orderMapper.getSalesTop10(map);
+
+        for (GoodsSalesDTO orderDetail : orderDetails) {
+            nameList.add(orderDetail.getName());
+            numberList.add(orderDetail.getNumber());
+        }
+        return SalesTop10ReportVO.builder()
+                .nameList(StringUtils.join(nameList,","))
+                .numberList(StringUtils.join(numberList,","))
                 .build();
     }
 }
