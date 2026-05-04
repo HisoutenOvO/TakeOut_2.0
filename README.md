@@ -1,4 +1,4 @@
-# 苍穹外卖 (Sky Take Out 2.0)
+# 优化升级版外卖 (Sky Take Out 2.0)
 
 ## 项目简介
 
